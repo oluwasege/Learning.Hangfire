@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,12 +27,15 @@ namespace HangFireApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddHangfire(x => x.UseSqlServerStorage("Server=.;Database=Api;Trusted_Connection=True;MultipleActiveResultSets=True"));
+            services.AddHangfireServer();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HangFireApi", Version = "v1" });
             });
+           
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +53,8 @@ namespace HangFireApi
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseHangfireDashboard("/mydashboard");
 
             app.UseEndpoints(endpoints =>
             {
